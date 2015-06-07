@@ -36,20 +36,6 @@ public interface Villager extends Ageable, NPC {
     public void setCareer(Career career);
 
     /**
-     * Gets the amount of riches this villager has.
-     *
-     * @return their riches.
-     */
-    public int getRiches();
-
-    /**
-     * Sets the amount of riches this villager has.
-     *
-     * @param riches the new amount of riches
-     */
-    public void setRiches(int riches);
-
-    /**
      * Gets this villager's career level.
      *
      * @return their current career level
