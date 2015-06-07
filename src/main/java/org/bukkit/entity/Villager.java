@@ -19,6 +19,64 @@ public interface Villager extends Ageable, NPC {
      */
     public void setProfession(Profession profession);
 
+    /**
+     * Gets the current career of this villager.
+     *
+     * @return current career. May be null if the villager has not been assigned a career.
+     */
+    public Career getCareer();
+
+    /**
+     * Sets the current career of this villager. Note that only certain
+     * {@link Profession}'s may have certain Careers. See individual
+     * {@link Career}'s for more information.
+     *
+     * @param career new career
+     */
+    public void setCareer(Career career);
+
+    /**
+     * Gets the amount of riches this villager has.
+     *
+     * @return their riches.
+     */
+    public int getRiches();
+
+    /**
+     * Sets the amount of riches this villager has.
+     *
+     * @param riches the new amount of riches
+     */
+    public void setRiches(int riches);
+
+    /**
+     * Gets this villager's career level.
+     *
+     * @return their current career level
+     */
+    public int getCareerLevel();
+
+    /**
+     * Sets this villagers career level.
+     *
+     * @param level new career level.
+     */
+    public void setCareerLevel(int level);
+
+    /**
+     * Returns whether this villager is "willing". A willing villager will breed
+     * and may offer different trades.
+     *
+     * @return willing status
+     */
+    public boolean isWilling();
+
+    /**
+     * Set the willing status defined by {@link #isWilling()}.
+     *
+     * @param willing new willing status
+     */
+    public void setWilling(boolean willing);
 
     /**
      * Represents the various different Villager professions there may be.
@@ -65,5 +123,54 @@ public interface Villager extends Ageable, NPC {
         public static Profession getProfession(int id) {
             return (id >= professions.length) ? null : professions[id];
         }
+    }
+
+    public enum Career {
+
+        /**
+         * Farmer career, may only be used by {@link Profession#FARMER}.
+         */
+        FARMER,
+        /**
+         * Fishermen career, may only be used by {@link Profession#FARMER}.
+         */
+        FISHERMAN,
+        /**
+         * Shepherd career, may only be used by {@link Profession#FARMER}.
+         */
+        SHEPHERD,
+        /**
+         * Fletcher career, may only be used by {@link Profession#FARMER}.
+         */
+        FLETCHER,
+        /**
+         * Librarian career, may only be used by {@link Profession#LIBRARIAN}.
+         */
+        LIBRARIAN,
+        /**
+         * Priest career, may only be used by {@link Profession#PRIEST}.
+         */
+        CLERIC,
+        /**
+         * Armorer career, may only be used by {@link Profession#BLACKSMITH}.
+         */
+        ARMOR,
+        /**
+         * Weapon smith career, may only be used by
+         * {@link Profession#BLACKSMITH}.
+         */
+        WEAPON,
+        /**
+         * Tool smith career, may only be used by {@link Profession#BLACKSMITH}.
+         */
+        TOOL,
+        /**
+         * Butcher career, may only be used by {@link Profession#BUTCHER}.
+         */
+        BUTCHER,
+        /**
+         * Leatherworker career, may only be used by {@link Profession#BUTCHER}.
+         */
+        LEATHER
     }
 }
