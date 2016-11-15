@@ -426,6 +426,13 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          * <p>
          * Damage: 1
          */
-        HOT_FLOOR
+        HOT_FLOOR,
+        /**
+         * Damage caused when an entity is colliding with too many entities due
+         * to the maxEntityCramming game rule.
+         * <p>
+         * Damage: 6
+         */
+        CRAMMING
     }
 }
