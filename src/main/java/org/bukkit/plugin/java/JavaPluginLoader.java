@@ -1,6 +1,7 @@
 package org.bukkit.plugin.java;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.Warning;
@@ -42,18 +42,20 @@ import org.bukkit.plugin.TimedRegisteredListener;
 import org.bukkit.plugin.UnknownDependencyException;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import static java.lang.String.format;
+
 /**
  * Represents a Java plugin loader, allowing plugins in the form of .jar
  */
 public final class JavaPluginLoader implements PluginLoader {
     final Server server;
-    private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
+    private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), Pattern.compile("_dev$"), };
     private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
     private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
 
     /**
      * This class was not meant to be constructed explicitly
-     * 
+     *
      * @param instance the server instance
      */
     @Deprecated
@@ -85,7 +87,7 @@ public final class JavaPluginLoader implements PluginLoader {
         if (dataFolder.equals(oldDataFolder)) {
             // They are equal -- nothing needs to be done!
         } else if (dataFolder.isDirectory() && oldDataFolder.isDirectory()) {
-            server.getLogger().warning(String.format(
+            server.getLogger().warning(format(
                 "While loading %s (%s) found old-data folder: `%s' next to the new one `%s'",
                 description.getFullName(),
                 file,
@@ -96,7 +98,7 @@ public final class JavaPluginLoader implements PluginLoader {
             if (!oldDataFolder.renameTo(dataFolder)) {
                 throw new InvalidPluginException("Unable to rename old data folder: `" + oldDataFolder + "' to: `" + dataFolder + "'");
             }
-            server.getLogger().log(Level.INFO, String.format(
+            server.getLogger().log(Level.INFO, format(
                 "While loading %s (%s) renamed data folder: `%s' to `%s'",
                 description.getFullName(),
                 file,
@@ -106,7 +108,7 @@ public final class JavaPluginLoader implements PluginLoader {
         }
 
         if (dataFolder.exists() && !dataFolder.isDirectory()) {
-            throw new InvalidPluginException(String.format(
+            throw new InvalidPluginException(format(
                 "Projected datafolder: `%s' for %s (%s) exists and is not a directory",
                 dataFolder,
                 description.getFullName(),
@@ -143,6 +145,18 @@ public final class JavaPluginLoader implements PluginLoader {
         InputStream stream = null;
 
         try {
+            // dev support
+            if (file.isDirectory()) {
+                File pluginYamlFile = new File(file, "plugin.yml");
+                if (!pluginYamlFile.exists()) {
+                    throw new InvalidDescriptionException(
+                        new FileNotFoundException(
+                            format("Directory %s does not contain plugin.yml", file.getAbsolutePath())));
+                }
+
+                return new PluginDescriptionFile(new FileInputStream(pluginYamlFile));
+            }
+
             jar = new JarFile(file);
             JarEntry entry = jar.getJarEntry("plugin.yml");
 
@@ -274,7 +288,7 @@ public final class JavaPluginLoader implements PluginLoader {
                     }
                     plugin.getLogger().log(
                             Level.WARNING,
-                            String.format(
+                            format(
                                     "\"%s\" has registered a listener for %s on method \"%s\", but the event is Deprecated." +
                                     " \"%s\"; please notify the authors %s.",
                                     plugin.getDescription().getFullName(),
@@ -341,7 +355,7 @@ public final class JavaPluginLoader implements PluginLoader {
         Validate.isTrue(plugin instanceof JavaPlugin, "Plugin is not associated with this PluginLoader");
 
         if (plugin.isEnabled()) {
-            String message = String.format("Disabling %s", plugin.getDescription().getFullName());
+            String message = format("Disabling %s", plugin.getDescription().getFullName());
             plugin.getLogger().info(message);
 
             server.getPluginManager().callEvent(new PluginDisableEvent(plugin));
